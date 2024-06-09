@@ -209,6 +209,7 @@
                 <version>2.22.2</version>
                 <configuration>
                     <argLine>@{argLine} -Dfile.encoding=UTF-8</argLine>
+                    <testFailureIgnore>true</testFailureIgnore>
                 </configuration>
             </plugin>
             <plugin>

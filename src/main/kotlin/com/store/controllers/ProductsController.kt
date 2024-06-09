@@ -40,7 +40,8 @@ class ProductsController {
             id = id,
             name = productDetails.name,
             type = productDetails.type,
-            inventory = productDetails.inventory
+            inventory = productDetails.inventory,
+            cost= productDetails.cost
         )
         products[id] = product
 

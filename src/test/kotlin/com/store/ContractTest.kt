@@ -21,7 +21,7 @@ class ContractTest : SpecmaticJUnitSupport() {
             System.setProperty("SPECMATIC_GENERATIVE_TESTS", "true")
             System.setProperty("TEST_ANNOTATIONS", "true")
 
-            context = SpringApplication.run(Application::class.java)
+            context = SpringApplication.run(Contract::class.java)
         }
 
         @JvmStatic
