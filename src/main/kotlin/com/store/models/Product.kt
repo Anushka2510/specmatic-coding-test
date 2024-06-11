@@ -14,6 +14,6 @@ data class Product(
     @field:Min(value = 1, message = "Inventory must be greater than 0")
     val inventory: Int,
 
-    @field:Min(value = 1, message = "Cost must be greater than 0")
+    @field:Min(value = 0, message = "Cost must be greater than or equal to 0")
     val cost: Number
 )

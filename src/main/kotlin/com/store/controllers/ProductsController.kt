@@ -1,9 +1,12 @@
 package com.store.controllers
 
-import ErrorResponseBody
 import Product
 import ProductDetails
-import ProductType
+import com.store.OpenApiUtil.OpenApiUtil
+import com.store.models.ApiResponse
+import com.store.models.ErrorResponse
+import com.store.models.ProductCreatedResponse
+import com.store.models.ProductListResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -24,9 +27,9 @@ class ProductsController {
     fun createProduct(
         @Valid @RequestBody productDetails: ProductDetails,
         bindingResult: BindingResult
-    ): ResponseEntity<Any> {
+    ): ResponseEntity<ApiResponse> {
         if (bindingResult.hasErrors()) {
-            val errorResponse = ErrorResponseBody(
+            val errorResponse = ErrorResponse(
                 timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),
                 status = HttpStatus.BAD_REQUEST.value(),
                 error = bindingResult.allErrors.joinToString { it.defaultMessage ?: "Invalid value" },
@@ -44,15 +47,17 @@ class ProductsController {
             cost= productDetails.cost
         )
         products[id] = product
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(mapOf("id" to id))
+        val response = ProductCreatedResponse(id)
+        return ResponseEntity.status(HttpStatus.CREATED).body(response)
     }
 
     @GetMapping
+    //didn't change any here because we are getting different response body, errorResponse is a different object and list of product is different for the same api.
     fun getProducts(@RequestParam(required = false) type: String?): ResponseEntity<Any> {
-        // Check if the type is valid
-        if (type != null && !isValidType(type)) {
-            val errorResponse = ErrorResponseBody(
+
+        val validTypes = OpenApiUtil.getProductTypes()
+        if (type != null && type !in validTypes) {
+            val errorResponse = ErrorResponse(
                 timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),
                 status = HttpStatus.BAD_REQUEST.value(),
                 error = "Invalid type value",
@@ -67,14 +72,9 @@ class ProductsController {
         } else {
             products.values.toList()
         }
+
         return ResponseEntity.ok(filteredProducts)
     }
 
-    // Function to check if the type parameter is valid
-    private fun isValidType(type: String): Boolean {
-        return type.equals("gadget", ignoreCase = true) ||
-                type.equals("book", ignoreCase = true) ||
-                type.equals("food", ignoreCase = true) ||
-                type.equals("other", ignoreCase = true)
-    }
+
 }
