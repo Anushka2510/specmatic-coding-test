@@ -1,6 +1,5 @@
 package com.store.handler
 
-import com.store.dto.ApiResponse
 import com.store.dto.ErrorResponse
 import com.store.exception.InvalidProductTypeException
 import com.store.exception.ProductValidationException
@@ -22,28 +21,31 @@ class GlobalExceptionHandler {
         fun handleProductValidationException(
             ex: ProductValidationException,
             request: WebRequest
-        ): ResponseEntity<ErrorResponse> {
-            val errorResponse = ErrorResponse(
-                timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),
-                status = HttpStatus.BAD_REQUEST.value(),
-                error = ex.message ?: "Validation error",
-                path = request.getDescription(false).substring(4) // Removing 'uri=' prefix
-            )
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse)
+        ):ResponseEntity<ErrorResponse> {
+            return buildErrorResponse(ex.message ?: "Validation error", request, HttpStatus.BAD_REQUEST)
         }
+
 
         @ExceptionHandler(InvalidProductTypeException::class)
         fun handleInvalidProductTypeException(
             ex: InvalidProductTypeException,
             request: WebRequest
-        ): ResponseEntity<ApiResponse> {
+        ): ResponseEntity<ErrorResponse> {
+            return buildErrorResponse(ex.message ?: "Invalid product type", request, HttpStatus.BAD_REQUEST)
+        }
+
+        private fun buildErrorResponse(
+            errorMessage: String,
+            request: WebRequest,
+            status: HttpStatus
+        ): ResponseEntity<ErrorResponse> {
             val errorResponse = ErrorResponse(
                 timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),
-                status = HttpStatus.BAD_REQUEST.value(),
-                error = ex.message ?: "Invalid product type",
-                path = request.getDescription(false).substring(4)
+                status = status.value(),
+                error = errorMessage,
+                path = request.getDescription(false).substring(4) // Removing 'uri=' prefix
             )
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse)
+            return ResponseEntity.status(status).body(errorResponse)
         }
 
         // Other exception handlers can be added here
