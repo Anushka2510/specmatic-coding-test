@@ -16,5 +16,8 @@ data class ProductDetails(
     val inventory: Int,
 
     @field:Min(value = 1, message = "Cost must be greater than 0")
-    val cost: Number
-)
+    val cost: Int
+
+){
+    constructor() : this("", ProductType.gadget, 0, 0)
+}

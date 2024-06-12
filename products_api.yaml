@@ -89,7 +89,7 @@ components:
         inventory:
           type: integer
         cost:
-          type: number
+          type: integer
       required:
         - name
         - type
